@@ -15,6 +15,6 @@ Các bạn có thể dăng ký dùng thử API miễn phí tại website http://
   
   **2.** [Lấy secret_key tại trang tài liệu hướng dẫn sau khi đã đăng nhập](https://developer.tradachungkhoan.com/document).
   
-  **3.** Thay secret_key vừa lấy vào biến $SECRET_KEY. 
+  **3.** Thay secret_key vừa lấy vào biến $SECRET_KEY trong gile config.php. 
   
   **4.** Upload mã nguồn lên máy chủ của bạn.
