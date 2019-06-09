@@ -13,8 +13,8 @@ Các bạn có thể dăng ký dùng thử API miễn phí tại website http://
 
   **1.** [Đăng ký sử dụng API tại trang developer của chúng tôi](https://developer.tradachungkhoan.com/signup).
   
-  **2.** [Lấy seacret_key tại trang tài liệu hướng dẫn sau khi đã đăng nhập](https://developer.tradachungkhoan.com/document).
+  **2.** [Lấy secret_key tại trang tài liệu hướng dẫn sau khi đã đăng nhập](https://developer.tradachungkhoan.com/document).
   
-  **3.** thay secret_key vừa lấy vào biến $SECRET_KEY. 
+  **3.** Thay secret_key vừa lấy vào biến $SECRET_KEY. 
   
-  **4.** upload source code lên máy chủ của bạn.
+  **4.** Upload mã nguồn lên máy chủ của bạn.
