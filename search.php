@@ -1,7 +1,7 @@
 <?php
         require("./config.php");
         
-        $query = trim(isset($_GET['q'])? $_GET['q']: 'chứng khoán') == '' ?  'chứng khoán': trim($_GET['q']);
+        $query = trim(isset($_GET['q'])? $_GET['q']: 'tin moi') == '' ?  'tin moi': trim($_GET['q']);
 
         $data = array(
             'secret_key' => $SECRET_KEY,
@@ -11,6 +11,10 @@
             'version' => 1
         );
          
+        if(isset($_GET['period']) && is_numeric($_GET['period'])  && intval($_GET['period']) > 0 ){
+            $data['period'] = intval($_GET['period']);
+            $period = $data['period'];
+        }
     
         $allData = json_decode(file_get_contents("$ENDPOINT?".http_build_query($data)),true);
         
@@ -119,6 +123,7 @@
         <div class="header">
             <div class="container">
                 <div class="row" >
+                    <form id="search_form" method="GET" action='./search.php'>
                     <div class="col-lg-2 col-md-2 hidden-sm hidden-xs">
                     </div>
                     <div class="col-lg-8 col-md-8 col-sm-12 col-xs-12">
@@ -132,7 +137,6 @@
                         </div>
 
                         <div class="form-group pull-right top_search">
-                            <form id="search_form" method="GET" action='./search'>
                                 <div class="input-group">
                                     <input type="text" name="q" class="form-control" value="<?php echo $query?>" style="height: 39px; background-color: #eaeaea;font-size:22px; "  autofocus="autofocus">
                                     <span class="input-group-btn">
@@ -141,19 +145,29 @@
                                 </div>
 
 
-                            </form>
                         </div>
                     </div>
 
-                    <div class="col-lg-2 col-md-2 hidden-sm hidden-xs">
-                    </div>
+                    <div class="col-lg-2 col-md-2 hidden-sm hidden-xs"> </div>
 
 
                     <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                        <div class="result_count">
+
+                    <div class="result_count col-xs-12 col-lg-9 col-md-9 col-sm-9">
                         <h6>Khoảng <?php echo number_format($numberOfResult,0,' ','.')?> kết quả (<?php echo number_format(floatval($took/1000), 3, ',', ' ') ?> giây)</h6>
-                        </div>
                     </div>
+
+                    <div class="form-group col-xs-12 col-lg-3 col-md-3 col-sm-3" style="padding: 10px 25px;text-align:right;">
+                        <select onchange="document.getElementById('search_form').submit();" class="custom-select custom-select-sm  col-xs-12 col-lg-12 col-md-12 col-sm-12" name="period" id="period" style="line-height: 1.5;border-radius: .4rem; padding: .375rem 1.75rem .375rem .75rem;line-height: 1.5;">
+                            <option value="0"  <?=isset($_GET['period']) ||  $_GET['period']==0 ? "":"selected"?>>Mọi lúc</option>
+                            <option value="24" <?=$_GET['period']==24? "selected": ""?> >24 giờ qua</option>
+                            <option value="168" <?=$_GET['period']==168? "selected": ""?> >1 tuần qua</option>
+                            <option value="720" <?=$_GET['period']==720? "selected": ""?> >1 tháng qua</option>
+                            <option value="8760" <?=$_GET['period']==8760? "selected": ""?> >1 năm qua</option>
+                        </select>
+                    </div>
+                    </div>
+                    </form>
                 </div>
             </div>
         </div>
@@ -312,6 +326,9 @@
                                         'p' => $i,
                                     );
 
+                                    if(isset($period) && $period > 0){
+                                        $data['period'] = $period;
+                                    } 
 
                                     $url = "./search.php?".http_build_query($data);
 
