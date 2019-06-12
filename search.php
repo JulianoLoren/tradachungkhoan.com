@@ -260,17 +260,15 @@
                                             ?> -
                                         </span>
                                         <?php
-                                            $query = strtolower($query);
                                             $content = $allResult[$i]['content'];
                                             $contentLower = strtolower($content);
-                                            $pos = strpos($contentLower,$query);
+                                            $pos = strpos($contentLower,'<b>');
                                             if($pos === false){
                                                 $echoText = substr($content,0,500);
 												$blankPos = strrpos($echoText,' ');
 												$echoText = substr($echoText,0,$blankPos);
                                                 echo "$echoText...";
                                             }else{
-
                                                 $blankPos = 0;
                                                 if($pos > 0)
                                                     $blankPos = strpos($content,' ',$pos < 50 ? 0 : $pos - 50 );
@@ -282,20 +280,14 @@
 
                                                 $echoText = substr($content,$blankPos ,$blankPos2 -$blankPos);
  
-                                                $position = 0;
+                                                $left = substr_count($echoText,'<b>') - substr_count($echoText,'</b>');
 
-                                                while(true){
-
-                                                    $position = strpos(strtolower($echoText),$query,$position);
-                                                    if($position === false) break;
-                                                    $echoText = substr_replace( $echoText, '<b>', $position, 0 );
-                                                    $position = strpos(strtolower($echoText),$query,$position) + strlen($query);
-                                                    if($position === false) break;
-                                                    $echoText = substr_replace( $echoText, '</b>', $position, 0 );
-
+                                                for($k = 0; $k < $left; $k++){
+                                                    $echoText=$echoText."</b>";
                                                 }
-
                                                 echo "...$echoText...";
+
+
                                             }
 
                                         ?>
