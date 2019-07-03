@@ -1,30 +1,30 @@
 <?php
-        require("./config.php");
-        
-        $query = trim(isset($_GET['q'])? $_GET['q']: 'tin moi') == '' ?  'tin moi': trim($_GET['q']);
 
-        $data = array(
-            'secret_key' => $SECRET_KEY,
-            'query' => $query ,
-            'page' => isset($_GET['p'])? $_GET['p']: 1,
-            'per_page' => $PERPAGE ,
-            'version' => 1
-        );
-         
-        if(isset($_GET['period']) && is_numeric($_GET['period'])  && intval($_GET['period']) > 0 ){
-            $data['period'] = intval($_GET['period']);
-            $period = $data['period'];
-        }
-    
-        $allData = json_decode(file_get_contents("$ENDPOINT?".http_build_query($data)),true);
-        
-        $took = $allData['took'];
-        $numberOfResult = $allData['total'];
-        $allResult = $allData['result'];
+require('config.php');
 
-        $paging = intval($numberOfResult/$PERPAGE ) + ($numberOfResult%$PERPAGE  == 0 ? 0:1);
+$query  = trim(isset($_GET['q'])? $_GET['q']: 'tin moi') == '' ?  'tin moi': trim($_GET['q']);
+$endpoint = $ENDPOINT;
+$per_page = 20;
+$searchData = array(
+    'secret_key' => $SECRET_KEY,
+    'query' => $query  ,
+    'page' => isset($_GET['p'])? $_GET['p']: 1,
+    'per_page' => $per_page,
+    'version' => 1
+);
+
+if(isset($_GET['period']) && is_numeric($_GET['period'])  && intval($_GET['period']) > 0 ){
+    $searchData['period'] = intval($_GET['period']);
+}
+$allData 						= json_decode(file_get_contents("$endpoint?".http_build_query($searchData)),true);
+
+$took   			= $allData['took'];
+$period   			= (isset($_GET['period']) && is_numeric($_GET['period'])  && intval($_GET['period']) > 0 ) ? $_GET['period'] : 0;
+$numberOfResult   	= $allData['total'];
+$allResult   		= $allData['result'];
+$paging   			= intval($allData['total']/$per_page) + ($allData['total']%$per_page == 0 ? 0:1);
+
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -33,15 +33,18 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="icon" href="./resource/custom/images/fav.ico" type="image/x-icon">
+    <link rel="shortcut icon" type="image/png" href="/resource/images/fav.ico" />
     <title>Trà Đá Chứng Khoán - <?php echo $query ;?></title>
 
     <!-- Bootstrap -->
-    <link href="./resource/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/resource/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Font Awesome -->
-    <link href="./resource/font-awesome/css/font-awesome.min.css" rel="stylesheet">
+    <link href="/resource/font-awesome/css/font-awesome.min.css" rel="stylesheet">
+    <!-- NProgress -->
+    <link href="/resource/nprogress/nprogress.css" rel="stylesheet">
+    
     <!-- Custom Theme Style -->
-    <link href="./resource/custom/build/css/custom.min.css?v=1.0.2" rel="stylesheet">
+    <link href="/resource/css/custom.min.css?v=1.0.2" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css?family=Roboto+Condensed&display=swap" rel="stylesheet">
     <style>
         .header {
@@ -111,12 +114,22 @@
         }
     </style>
 
+    
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-140455259-1"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'UA-140455259-1');
+  </script>
 
   </head>
 
   <body class="nav-md" style="overflow-x:hidden; ">
   <div id="fb-root"></div>
-    <script async defer crossorigin="anonymous" src="https://connect.facebook.net/en_GB/sdk.js#xfbml=1&version=v3.3&appId=490560961112623&autoLogAppEvents=1"></script>
+<script async defer crossorigin="anonymous" src="https://connect.facebook.net/en_GB/sdk.js#xfbml=1&version=v3.3&appId=490560961112623&autoLogAppEvents=1"></script>
 
     <div class=" body"  >
       <div class="main_container">
@@ -124,50 +137,53 @@
             <div class="container">
                 <div class="row" >
                     <form id="search_form" method="GET" action='./search.php'>
-                    <div class="col-lg-2 col-md-2 hidden-sm hidden-xs">
-                    </div>
-                    <div class="col-lg-8 col-md-8 col-sm-12 col-xs-12">
+                        <div class="col-lg-2 col-md-2 hidden-sm hidden-xs">
+                        </div>
+                        <div class="col-lg-8 col-md-8 col-sm-12 col-xs-12">
 
-                        <div class="form-group pull-right top_search" style="display: table; height: 80px; overflow-x:hidden;width:100%;">
-                            <div style="display: table-cell; vertical-align: middle;width:100%;">
-                                <a href="./">
-                                    <div id="header_text"> <img src="./resource/custom/images/icon.png" alt="Logo" height="60" width="60" data-atf="1"> Trà Đá Chứng Khoán </div>
-                                </a>
+                            <div class="form-group pull-right top_search" style="display: table; height: 80px; overflow-x:hidden;width:100%;">
+                                <div style="display: table-cell; vertical-align: middle;width:100%;">
+                                    <a href="/">
+                                        <div id="header_text"> <img src="/resource/images/icon.png" alt="tradachungkhoan" height="60" width="60" data-atf="1"> Trà Đá Chứng Khoán </div>
+                                    </a>
+                                </div>
+                            </div>
+
+                            <div class="form-group pull-right top_search">
+                                    <div class="input-group">
+                                        <input type="text" name="q" class="form-control" value="<?php echo $query?>" style="height: 39px; background-color: #eaeaea;font-size:22px; "  autofocus="autofocus">
+                                        <span class="input-group-btn">
+                                                                    <button class="btn btn-default" type="button"  style="height: 39px; background-color:#3b78e7; color:white" onclick="document.getElementById('search_form').submit();">Tìm</button>
+                                                                    </span>
+                                    </div>
+
+
                             </div>
                         </div>
 
-                        <div class="form-group pull-right top_search">
-                                <div class="input-group">
-                                    <input type="text" name="q" class="form-control" value="<?php echo $query?>" style="height: 39px; background-color: #eaeaea;font-size:22px; "  autofocus="autofocus">
-                                    <span class="input-group-btn">
-                                                                <button class="btn btn-default" type="button"  style="height: 39px; background-color:#3b78e7; color:white" onclick="document.getElementById('search_form').submit();">Tìm</button>
-                                                                </span>
-                                </div>
-
-
+                        <div class="col-lg-2 col-md-2 hidden-sm hidden-xs">
                         </div>
-                    </div>
 
-                    <div class="col-lg-2 col-md-2 hidden-sm hidden-xs"> </div>
+                        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">&nbsp</div>
 
+                        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
 
-                    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                            <div class="result_count col-xs-12 col-lg-9 col-md-9 col-sm-9">
+                                <h6>Khoảng <?php echo number_format($numberOfResult,0,' ','.')?> kết quả (<?php echo number_format(floatval($took/1000), 3, ',', ' ') ?> giây)</h6>
+                            </div>
 
-                    <div class="result_count col-xs-12 col-lg-9 col-md-9 col-sm-9">
-                        <h6>Khoảng <?php echo number_format($numberOfResult,0,' ','.')?> kết quả (<?php echo number_format(floatval($took/1000), 3, ',', ' ') ?> giây)</h6>
-                    </div>
-
-                    <div class="form-group col-xs-12 col-lg-3 col-md-3 col-sm-3" style="padding: 10px 25px;text-align:right;">
-                        <select onchange="document.getElementById('search_form').submit();" class="custom-select custom-select-sm  col-xs-12 col-lg-12 col-md-12 col-sm-12" name="period" id="period" style="line-height: 1.5;border-radius: .4rem; padding: .375rem 1.75rem .375rem .75rem;line-height: 1.5;">
-                            <option value="0"  <?=isset($_GET['period']) ||  $_GET['period']==0 ? "":"selected"?>>Mọi lúc</option>
-                            <option value="24" <?=$_GET['period']==24? "selected": ""?> >24 giờ qua</option>
-                            <option value="168" <?=$_GET['period']==168? "selected": ""?> >1 tuần qua</option>
-                            <option value="720" <?=$_GET['period']==720? "selected": ""?> >1 tháng qua</option>
-                            <option value="8760" <?=$_GET['period']==8760? "selected": ""?> >1 năm qua</option>
-                        </select>
-                    </div>
-                    </div>
+                            <div class="form-group col-xs-12 col-lg-3 col-md-3 col-sm-3" style="padding: 10px 25px;text-align:right;">
+                                <select onchange="document.getElementById('search_form').submit();" class="custom-select custom-select-sm  col-xs-12 col-lg-12 col-md-12 col-sm-12" name="period" id="period" style="line-height: 1.5;border-radius: .4rem; padding: .375rem 1.75rem .375rem .75rem;line-height: 1.5;">
+                                    <option value="0"  <?=isset($_GET['period']) ||  $_GET['period']==0 ? "":"selected"?>>Mọi lúc</option>
+                                    <option value="24" <?=$_GET['period']==24? "selected": ""?> >24 giờ qua</option>
+                                    <option value="168" <?=$_GET['period']==168? "selected": ""?> >1 tuần qua</option>
+                                    <option value="720" <?=$_GET['period']==720? "selected": ""?> >1 tháng qua</option>
+                                    <option value="8760" <?=$_GET['period']==8760? "selected": ""?> >1 năm qua</option>
+                                </select>
+                            </div>
+                        </div>
                     </form>
+
                 </div>
             </div>
         </div>
@@ -193,7 +209,7 @@
  
     
                                     
-                                    <a style="padding-right: 60px:float:left;" href="<?php echo  $allResult[$i]['source']?>" target="_blank" >
+                                    <a style="padding-right: 60px:float:left;" href="https://developer.apichungkhoan.com/click?tin=<?php echo  $allResult[$i]['news_id'];?>" target="_blank" >
                                         <div class="search_title"><?php echo $allResult[$i]['title']?></div>
                                         <div class="clearfix"></div>
                                         <div class="search_link"> <?php echo $allResult[$i]['source']?></div>
@@ -205,7 +221,7 @@
  
                                 <div class="x_content">
                                     <script>
-                                    function open_<?php echo $allResult[$i]['news_id'] ?>(){
+                                    function open_<?php echo $allResult[$i]['news_id'] + 14101990?>(){
 
                                         <?php
                                                     $contentShow = $allResult[$i]['content'];
@@ -213,7 +229,6 @@
                                                     $contentShow = str_replace(PHP_EOL,'</br>',$contentShow);
                                                     $contentShow = str_replace(PHP_EOL,'</br>',$contentShow);
                                                     $contentShow = str_replace(array("\r\n", "\n", "\r"), '', $contentShow);
-
 
                                                     $query = strtolower($query);
                                                     $position = 0;
@@ -232,8 +247,8 @@
 
                                         ?>
 
-                                        document.getElementById("<?php echo $allResult[$i]['news_id'] ?>").innerHTML = '<?php echo $contentShow;?>';
-                                        document.getElementById("<?php echo $allResult[$i]['news_id'] ?>").onclick = function() {
+                                        document.getElementById("<?php echo $allResult[$i]['news_id'] + 14101990?>").innerHTML = '<?php echo $contentShow;?>';
+                                        document.getElementById("<?php echo $allResult[$i]['news_id'] + 14101990?>").onclick = function() {
                                                                                                                                                 return false;
                                                                                                                                             }
 
@@ -241,8 +256,8 @@
                                     </script>
                                     <div
                                             class="search_content"
-                                            id ='<?php echo $allResult[$i]['news_id'] ?>'
-                                            onclick = "open_<?php echo $allResult[$i]['news_id'] ?>()"
+                                            id ='<?php echo $allResult[$i]['news_id'] + 14101990?>'
+                                            onclick = "open_<?php echo $allResult[$i]['news_id'] + 14101990?>()"
                                     >
                                         <span class="search_time">
                                             <?php
@@ -261,14 +276,29 @@
                                         </span>
                                         <?php
                                             $content = $allResult[$i]['content'];
-                                            $contentLower = strtolower($content);
-                                            $pos = strpos($contentLower,'<b>');
+
+                                            $query = strtolower($query);
+                                            $position = 0;
+
+                                            while(true){
+
+                                                $position = strpos(strtolower($content),$query,$position);
+                                                if($position === false) break;
+                                                $content = substr_replace( $content, '<b>', $position, 0 );
+                                                $position = strpos(strtolower($content),$query,$position) + strlen($query);
+                                                if($position === false) break;
+                                                $content = substr_replace( $content, '</b>', $position, 0 );
+
+                                            }
+
+                                            $pos = stripos($content,'<b>'); 
                                             if($pos === false){
                                                 $echoText = substr($content,0,500);
 												$blankPos = strrpos($echoText,' ');
 												$echoText = substr($echoText,0,$blankPos);
-                                                echo "$echoText...";
+                                                echo "$echoText...";  
                                             }else{
+
                                                 $blankPos = 0;
                                                 if($pos > 0)
                                                     $blankPos = strpos($content,' ',$pos < 50 ? 0 : $pos - 50 );
@@ -286,8 +316,6 @@
                                                     $echoText=$echoText."</b>";
                                                 }
                                                 echo "...$echoText...";
-
-
                                             }
 
                                         ?>
@@ -310,7 +338,7 @@
                     <div class="col-md-12">
                         <div class="x_panel">
                             <div class="x_title">
-                                <b>PAGE:</b>
+                                <b>PAGE: </b>
                                 <?php
                                 for($i = 1; $i <= $paging; $i++){
                                     $data = array(
@@ -318,9 +346,10 @@
                                         'p' => $i,
                                     );
 
-                                    if(isset($period) && $period > 0){
+                                    if($period > 0){
                                         $data['period'] = $period;
                                     } 
+
 
                                     $url = "./search.php?".http_build_query($data);
 
@@ -357,7 +386,7 @@
                       <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                           <div class="">
                               <div class="x_title">
-                                  <h2> Về chúng tôi </h2>
+                                  <h2> <b>Về chúng tôi</b> </h2>
 
                                   <div class="clearfix"></div>
                               </div>
@@ -407,11 +436,17 @@
 
                       <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                         <div class="copyright">
-                              <div class="col-lg-5 col-md-5 col-sm-4 col-xs-12">
-                                  <span>© Một sản phẩm của <a href="http://duchungtech.com" target="_blank" ><b>duchungtech.com</b></a></span>
+                              <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">
+                                <a href="https://developer.apichungkhoan.com" target="_blank" >API</a>
                               </div>
-                              <div class="col-lg-5 col-md-5 col-sm-4 col-xs-12">
+                              <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">
+                                <a href="https://github.com/JulianoLoren/tradachungkhoan.com" target="_blank" >Github</a>
+                              </div>
+                              <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">
                                   <a href="https://www.facebook.com/tradachungkhoan" target="_blank" >Fanpage</a>
+                              </div>
+                              <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">
+                                  <span>© Một sản phẩm của <a href="http://duchungtech.com" target="_blank" ><b>duchungtech.com</b></a></span>
                               </div>
                           </div>
                       </div>
@@ -425,12 +460,11 @@
 
 
     <!-- jQuery -->
-    <script src="./resource/jquery/dist/jquery.min.js"></script>
+    <script src="/resource/jquery/dist/jquery.min.js"></script>
     <!-- Bootstrap -->
-    <script src="./resource/bootstrap/dist/js/bootstrap.min.js"></script>
-    <!-- Custom Theme Scripts -->
-    <script src="./resource/custom/build/js/custom.min.js"></script>
+    <script src="/resource/bootstrap/dist/js/bootstrap.min.js"></script>
 
+    
 
   </body>
 </html>
