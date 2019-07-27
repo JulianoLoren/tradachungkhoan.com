@@ -47,7 +47,7 @@
 <body>
   <div class="s006">
       <div class="container">
-        <form method="GET" action='./search'>
+        <form method="GET" action='./search.php'>
           <fieldset>
           <div class="icon"><img src="/resource/images/icon.png" alt="tradachungkhoan" height="100" width="100" data-atf="1"></div>
             <div class="banner" style="color:#0d7762;text-shadow:0px !importance;font-size: 40px;text-align: center; font-family: 'Roboto Condensed', sans-serif;padding-bottom: 30px;">Trà Đá Chứng Khoán</div>
